@@ -1,19 +1,39 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = [
+    "setuptools>=77",
+    "wheel"
+]
 build-backend = "setuptools.build_meta"
-
 [project]
 name = "cobra-oop"
 version = "0.1.0"
 description = "Comprehensive Object-Based Runtime Architecture"
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT"}
+license = "MIT"
 
 authors = [
-  {name = "Vishnu Swaroop"}
+    { name = "Vishnu Swaroop" }
 ]
 
-
-
 dependencies = []
+
+keywords = [
+    "python",
+    "oop",
+    "decorators",
+    "encapsulation",
+    "runtime"
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent"
+]
+[tool.setuptools]
+packages = ["cobra"]
+
+[project.urls]
+Homepage = "https://github.com/vishnuswaroop21/cobra-oop"
+Repository = "https://github.com/vishnuswaroop21/cobra-oop"
+Issues = "https://github.com/vishnuswaroop21/cobra-oop/issues"
