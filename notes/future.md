@@ -1,0 +1,8 @@
+- MCP support
+- Plugin API
+- Contract programming
+- AST
+- Runtime
+- Sealed classes
+- Final classes
+- Reflection
