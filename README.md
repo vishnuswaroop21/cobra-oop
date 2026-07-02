@@ -1,60 +1,23 @@
-# COBRA 🐍
+# 🐍 COBRA
 
 > **Comprehensive Object-Based Runtime Architecture**
 
-**COBRA** is an experimental Python library that introduces **optional runtime-enforced object-oriented programming concepts** while remaining fully compatible with standard Python.
+COBRA is an experimental Python library that brings runtime encapsulation and object-oriented access control to Python using decorators, descriptors, and runtime inspection.
 
-Python follows the philosophy of *"We're all consenting adults here."* COBRA embraces that philosophy while providing developers with the option to enforce stronger object-oriented constraints when building large or enterprise-grade applications.
-
----
-
-## Why COBRA?
-
-Python intentionally relies on conventions instead of strict access modifiers.
-
-For example:
-
-```python
-class BankAccount:
-    def __reset_pin(self):
-        ...
-```
-
-Although name mangling discourages accidental access, private members are still accessible when explicitly referenced.
-
-COBRA explores an alternative approach by introducing optional runtime validation for concepts such as:
-
-* Private methods
-* Protected methods
-* Private fields
-* Final methods
-* Runtime contracts
-* Interface validation
-
-The goal is **not to replace Python**, but to provide an optional layer of additional runtime guarantees.
+Unlike Python's naming conventions (`_protected`, `__private`), COBRA enforces access restrictions at runtime.
 
 ---
 
 ## Features
 
-### Current (v0.1)
+### ✅ v0.2.0
 
-* ✅ `@private`
-* ✅ Runtime access validation
-* ✅ Custom exception hierarchy
-* ✅ Unit tests
-* ✅ Extensible architecture
-
-### Planned
-
-* `@protected`
-* `PrivateField`
-* `ProtectedField`
-* `@final`
-* `@override`
-* Runtime contracts
-* Interface support
-* Performance optimisations
+- Runtime enforced private methods
+- Descriptor-based private fields
+- Runtime access engine
+- Automatic class registration
+- Lightweight and dependency-free
+- Python 3.11+
 
 ---
 
@@ -64,92 +27,137 @@ The goal is **not to replace Python**, but to provide an optional layer of addit
 pip install cobra-oop
 ```
 
-For development:
-
-```bash
-pip install -e .
-```
-
 ---
 
-## Quick Example
+## Example
 
 ```python
-from cobra import CobraObject, private
+from cobra import CobraObject, PrivateField, private
 
 
 class BankAccount(CobraObject):
 
-    @private
-    def reset_pin(self):
-        print("PIN reset")
+    balance = PrivateField(default=1000)
 
-    def change_pin(self):
-        self.reset_pin()
+    @private
+    def calculate_interest(self):
+        return self.balance * 0.08
+
+    def interest(self):
+        return self.calculate_interest()
 
 
 account = BankAccount()
 
-account.change_pin()      # ✅ Allowed
-account.reset_pin()       # ❌ Raises PrivateAccessError
+print(account.interest())
+```
+
+Output
+
+```
+80.0
+```
+
+Attempting to access private members directly:
+
+```python
+account.calculate_interest()
+```
+
+raises
+
+```
+PrivateAccessError
+```
+
+Likewise,
+
+```python
+account.balance
+```
+
+raises
+
+```
+PrivateAccessError
 ```
 
 ---
 
-## Project Structure
+## Current API
 
-```text
-cobra/
-├── decorators.py
-├── fields.py
-├── base.py
-├── exceptions.py
-├── utils.py
-└── __init__.py
+```python
+from cobra import (
+    CobraObject,
+    PrivateField,
+    private,
+)
 ```
 
 ---
 
 ## Roadmap
 
-The development roadmap can be found in:
+### ✅ v0.1
 
-```
-docs/roadmap.md
-```
+- Runtime private methods
 
-Architecture decisions are documented under:
+### ✅ v0.2
 
-```
-docs/adr/
-```
+- Descriptor-based private fields
+- Runtime access engine
+- Runtime class registry
+
+### 🚧 v0.3
+
+- Protected methods
+- Protected fields
+- Friend access
+- Runtime policy improvements
+
+### 🚧 v0.4
+
+- Final methods
+- Final classes
+- Runtime validation
+
+### 🎯 v1.0
+
+- Complete runtime encapsulation framework
+- Architecture enforcement
+- Static analysis integration
+- Framework integrations (Django, FastAPI)
 
 ---
 
-## Philosophy
+## Running Tests
 
-COBRA is designed around a few simple principles:
-
-* Keep Pythonic syntax.
-* Make strictness optional.
-* Prefer explicit behaviour over hidden magic.
-* Build small, testable components.
-* Learn by exploring Python internals.
+```bash
+python -m pytest
+```
 
 ---
 
 ## Contributing
 
-Contributions, suggestions, and discussions are always welcome.
+Contributions, bug reports, feature requests, and design discussions are welcome.
 
-If you discover an issue or have an idea for improving COBRA, feel free to open an issue or submit a pull request.
+Please open an issue before starting major changes.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License.
+MIT License
 
 ---
 
-> *"Python trusts developers. COBRA helps developers trust each other."* 🐍
+## Author
+
+**Vishnu Swaroop**
+
+GitHub:
+https://github.com/vishnuswaroop21/cobra-oop
+
+PyPI:
+https://pypi.org/project/cobra-oop/
