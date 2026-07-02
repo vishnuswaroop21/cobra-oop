@@ -1,52 +1,35 @@
 """
-cobra.object
+cobra.base
 
 Base object for all COBRA-enabled classes.
 
-Version: 0.1.0
+Version: 0.2.0
 """
+
+from .runtime import CobraRuntime
 
 
 class CobraObject:
     """
     Base class for all COBRA objects.
 
-    Future versions will provide:
+    Provides:
 
-    - Runtime access control
-    - Field interception
+    - Automatic runtime registration
+    - Helpful object representation
+
+    Future versions will add:
+
+    - Runtime interception
     - Contract validation
     - Reflection utilities
-    - Metadata support
     """
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        CobraRuntime.register_class(cls)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} at {hex(id(self))}>"
 
-    def __str__(self):
-        return self.__repr__()
-
-    # ------------------------------------------------------------------
-    # Reserved for COBRA v0.2+
-    # ------------------------------------------------------------------
-
-    def __getattribute__(self, name):
-        """
-        Reserved for future runtime access interception.
-
-        In v0.2 this will become the central point for
-        field-level encapsulation.
-        """
-        return super().__getattribute__(name)
-
-    def __setattr__(self, name, value):
-        """
-        Reserved for future runtime write interception.
-        """
-        super().__setattr__(name, value)
-
-    def __delattr__(self, name):
-        """
-        Reserved for future runtime delete interception.
-        """
-        super().__delattr__(name)
+    __str__ = __repr__

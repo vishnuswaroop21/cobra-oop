@@ -2,11 +2,19 @@
 
 import pytest
 
-from cobra import CobraObject, private
-from cobra.exceptions import PrivateAccessError
+from cobra import (
+    CobraObject,
+    PrivateField,
+    private,
+)
+from cobra.exceptions import (
+    PrivateAccessError,
+)
 
 
 class Person(CobraObject):
+
+    secret_code = PrivateField(default="XYZ123")
 
     @private
     def secret(self):
@@ -14,6 +22,9 @@ class Person(CobraObject):
 
     def reveal(self):
         return self.secret()
+
+    def reveal_code(self):
+        return self.secret_code
 
 
 class Employee(CobraObject):
@@ -24,6 +35,17 @@ class Employee(CobraObject):
 
     def get_salary(self):
         return self.salary()
+
+
+class Manager(Employee):
+
+    def manager_salary(self):
+        return self.get_salary()
+
+
+# ---------------------------------------------------------------------
+# Method Tests
+# ---------------------------------------------------------------------
 
 
 def test_private_method_can_be_called_inside_class():
@@ -46,3 +68,39 @@ def test_multiple_private_methods():
 
     with pytest.raises(PrivateAccessError):
         employee.salary()
+
+
+# ---------------------------------------------------------------------
+# Field Tests
+# ---------------------------------------------------------------------
+
+
+def test_private_field_can_be_accessed_inside_class():
+    person = Person()
+
+    assert person.reveal_code() == "XYZ123"
+
+
+def test_private_field_cannot_be_accessed_outside_class():
+    person = Person()
+
+    with pytest.raises(PrivateAccessError):
+        _ = person.secret_code
+
+
+# ---------------------------------------------------------------------
+# Inheritance Tests
+# ---------------------------------------------------------------------
+
+
+def test_private_method_still_works_through_public_method():
+    manager = Manager()
+
+    assert manager.manager_salary() == 50000
+
+
+def test_private_method_cannot_be_called_from_subclass_instance():
+    manager = Manager()
+
+    with pytest.raises(PrivateAccessError):
+        manager.salary()
