@@ -7,7 +7,7 @@ Comprehensive Object-Based Runtime Architecture
 Optional runtime-enforced OOP features for Python.
 
 Author: Vishnu Swaroop
-Version: 0.1.0
+Version: 0.2.0
 """
 
 from .base import CobraObject
@@ -31,7 +31,7 @@ from .fields import (
     ProtectedField,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     # Base
