@@ -3,7 +3,7 @@ cobra.fields
 
 Descriptor implementations for COBRA.
 
-Version: 0.2.0
+Version: 0.2.1
 """
 
 from .access import check_access

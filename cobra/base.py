@@ -3,7 +3,7 @@ cobra.base
 
 Base object for all COBRA-enabled classes.
 
-Version: 0.2.0
+Version: 0.2.1
 """
 
 from .runtime import CobraRuntime

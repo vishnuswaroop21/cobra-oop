@@ -10,7 +10,7 @@ Unlike Python's naming conventions (`_protected`, `__private`), COBRA enforces a
 
 ## Features
 
-### ✅ v0.2.0
+### ✅ v0.2.1
 
 - Runtime enforced private methods
 - Descriptor-based private fields
