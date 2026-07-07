@@ -10,7 +10,7 @@ checks to this module.
 from inspect import currentframe
 
 from .enums import AccessType, Operation
-
+from .policy import POLICIES
 
 def check_access(
     *,
@@ -24,6 +24,9 @@ def check_access(
     """
     Determines whether the current caller is permitted
     to access a COBRA member.
+
+    v0.2.1 
+    Updated it to policy for better use.
     """
 
     frame = currentframe()
@@ -51,29 +54,17 @@ def check_access(
 
         caller_self = caller_frame.f_locals.get("self")
 
-        #
-        # External code (module/function)
-        #
+    
         if caller_self is None:
             return False
-
-        #
-        # Public members
-        #
-        if access is AccessType.PUBLIC:
-            return True
-
-        #
-        # Private members
-        #
-        if access is AccessType.PRIVATE:
-            return isinstance(caller_self, owner)
-
-        #
-        # Protected members
-        #
-        if access is AccessType.PROTECTED:
-            return issubclass(caller_self.__class__, owner)
+        # Updated to policy 
+        policy = POLICIES[access]
+        return policy.check(
+                owner=owner,
+                caller=caller_self,
+                member=member,
+                operation=operation,
+            )
 
         raise NotImplementedError(
             f"{access.name} access has not been implemented."

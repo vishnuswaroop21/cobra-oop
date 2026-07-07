@@ -12,7 +12,7 @@ same runtime access engine.
 """
 
 from abc import ABC, abstractmethod
-
+from .enums import AccessType
 
 class AccessPolicy(ABC):
     """
@@ -113,3 +113,11 @@ class FriendPolicy(AccessPolicy):
         raise NotImplementedError(
             "Friend policy is not implemented yet."
         )
+    
+
+POLICIES = {
+AccessType.PUBLIC :PublicPolicy()
+,AccessType.PRIVATE :PrivatePolicy()
+,AccessType.PROTECTED :ProtectedPolicy()
+  
+}
