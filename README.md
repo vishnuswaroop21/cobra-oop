@@ -98,35 +98,61 @@ from cobra import (
 
 ## Roadmap
 
-### ✅ v0.1
+### ✅ v0.1.0
 
 - Runtime private methods
+- `@private` decorator
+- `CobraObject`
 
-### ✅ v0.2
+### ✅ v0.2.0
 
 - Descriptor-based private fields
 - Runtime access engine
 - Runtime class registry
+- Runtime access policies
+- `PrivateField`
 
-### 🚧 v0.3
+### ✅ v0.2.1
 
-- Protected methods
-- Protected fields
-- Friend access
-- Runtime policy improvements
+- `@protected` decorator
+- `ProtectedField`
+- Protected runtime validation
+- Expanded automated test suite (16 tests)
 
-### 🚧 v0.4
+### 🚧 v0.3.0
 
-- Final methods
+- `@friend` decorator
+- `FriendField`
+- Friend registry
+- Friend access policy
+- Runtime policy enhancements
+
+### 🚧 v0.4.0
+
+- `@final` decorator
+- `@override` decorator
 - Final classes
-- Runtime validation
+- Test suite reorganization
+- CI/CD integration
+- Improved documentation
 
-### 🎯 v1.0
+### 🚧 v0.5.0
+
+- DOJO static analysis engine
+- VS Code / Pylance diagnostics
+- Architecture rules
+- Runtime contracts
+- Developer tooling
+
+### 🎯 v1.0.0
 
 - Complete runtime encapsulation framework
+- Stable public API
+- Comprehensive documentation
 - Architecture enforcement
 - Static analysis integration
 - Framework integrations (Django, FastAPI)
+- Production-ready release
 
 ---
 
