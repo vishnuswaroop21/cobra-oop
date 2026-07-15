@@ -1,35 +1,49 @@
 [build-system]
 requires = [
     "setuptools>=77",
-    "wheel"
+    "wheel",
 ]
 build-backend = "setuptools.build_meta"
+
 [project]
 name = "cobra-oop"
-version = "0.2.1"
-description = "Comprehensive Object-Based Runtime Architecture"
+version = "0.3.0"
+description = "Runtime-enforced object-oriented access control for Python."
 readme = "README.md"
 requires-python = ">=3.11"
-license = "MIT"
+license = { file = "LICENSE" }
 
 authors = [
-    { name = "Vishnu Swaroop" }
+    { name = "Vishnu Swaroop" },
 ]
 
 dependencies = []
 
 keywords = [
     "python",
+    "cobra",
     "oop",
-    "decorators",
+    "object-oriented",
     "encapsulation",
-    "runtime"
+    "runtime",
+    "access-control",
+    "decorators",
+    "descriptors",
+    "reflection",
 ]
 
 classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent"
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+
 [tool.setuptools]
 packages = ["cobra"]
 
@@ -37,3 +51,5 @@ packages = ["cobra"]
 Homepage = "https://github.com/vishnuswaroop21/cobra-oop"
 Repository = "https://github.com/vishnuswaroop21/cobra-oop"
 Issues = "https://github.com/vishnuswaroop21/cobra-oop/issues"
+Documentation = "https://github.com/vishnuswaroop21/cobra-oop#readme"
+Changelog = "https://github.com/vishnuswaroop21/cobra-oop/blob/main/CHANGELOG.md"

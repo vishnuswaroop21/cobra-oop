@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.3.0
+
+### Added
+
+- Added `friends=[...]` support to `@private`
+- Added `friends=[...]` support to `@protected`
+- Added runtime friend registry (`CobraRuntime`)
+- Added friend metadata for runtime access policies
+- Extended runtime architecture for friend access
+- Added friend registration APIs
+- Added initial friend unit test suite
+- Maintained backward compatibility with existing decorators
+
+---
+
 ## v0.2.1
 
 ### Added

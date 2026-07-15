@@ -1,13 +1,9 @@
 """
 COBRA
-=====
 
 Comprehensive Object-Based Runtime Architecture
 
-Optional runtime-enforced OOP features for Python.
-
-Author: Vishnu Swaroop
-Version: 0.2.1
+Runtime-enforced object-oriented access control for Python.
 """
 
 from .base import CobraObject
@@ -18,20 +14,18 @@ from .decorators import (
     final,
     override,
 )
-from .exceptions import (
-    CobraError,
-    PrivateAccessError,
-    ProtectedAccessError,
-    FinalMethodError,
-    OverrideError,
-    CobraConfigurationError,
-)
 from .fields import (
     PrivateField,
     ProtectedField,
 )
+from .runtime import CobraRuntime
+from .exceptions import (
+    CobraError,
+    PrivateAccessError,
+    ProtectedAccessError,
+)
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 
 __all__ = [
     # Base
@@ -48,11 +42,11 @@ __all__ = [
     "PrivateField",
     "ProtectedField",
 
+    # Runtime
+    "CobraRuntime",
+
     # Exceptions
     "CobraError",
     "PrivateAccessError",
     "ProtectedAccessError",
-    "FinalMethodError",
-    "OverrideError",
-    "CobraConfigurationError",
 ]

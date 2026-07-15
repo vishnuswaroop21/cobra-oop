@@ -2,26 +2,57 @@
 
 > **Comprehensive Object-Based Runtime Architecture**
 
-COBRA is an experimental Python library that brings runtime encapsulation and object-oriented access control to Python using decorators, descriptors, and runtime inspection.
+[![PyPI](https://img.shields.io/pypi/v/cobra-oop)](https://pypi.org/project/cobra-oop/)
+[![Python](https://img.shields.io/pypi/pyversions/cobra-oop)](https://pypi.org/project/cobra-oop/)
+[![License](https://img.shields.io/pypi/l/cobra-oop)](LICENSE)
 
-Unlike Python's naming conventions (`_protected`, `__private`), COBRA enforces access restrictions at runtime.
+COBRA is an experimental Python framework that introduces **runtime-enforced object-oriented access control** using decorators, descriptors, and runtime introspection.
+
+Unlike Python's naming conventions (`_protected`, `__private`), COBRA validates access **at runtime**, enabling stronger encapsulation without modifying the Python language.
 
 ---
 
-## Features
+# Why COBRA?
 
-### ✅ v0.2.1
+Python intentionally embraces the philosophy of:
 
-- Runtime enforced private methods
+> *"We're all consenting adults here."*
+
+COBRA explores an alternative approach for projects where **runtime enforcement** of object-oriented design rules is desirable.
+
+The framework currently supports:
+
+- Runtime-enforced private methods
+- Runtime-enforced protected methods
 - Descriptor-based private fields
-- Runtime access engine
+- Descriptor-based protected fields
+- Runtime policy engine
+- Automatic runtime class registration
+- Friend access metadata *(v0.3.0)*
+
+COBRA is designed as a learning project and an extensible runtime architecture for future experimentation.
+
+---
+
+# Features
+
+## ✅ v0.3.0
+
+- Runtime-enforced `@private`
+- Runtime-enforced `@protected`
+- Descriptor-based `PrivateField`
+- Descriptor-based `ProtectedField`
+- Friend metadata (`friends=[...]`)
+- Runtime friend registry
+- Centralized runtime access engine
+- Policy-based access validation
 - Automatic class registration
-- Lightweight and dependency-free
+- Lightweight & dependency-free
 - Python 3.11+
 
 ---
 
-## Installation
+# Installation
 
 ```bash
 pip install cobra-oop
@@ -29,10 +60,16 @@ pip install cobra-oop
 
 ---
 
-## Example
+# Quick Start
+
+## Private Members
 
 ```python
-from cobra import CobraObject, PrivateField, private
+from cobra import (
+    CobraObject,
+    PrivateField,
+    private,
+)
 
 
 class BankAccount(CobraObject):
@@ -54,11 +91,11 @@ print(account.interest())
 
 Output
 
-```
+```text
 80.0
 ```
 
-Attempting to access private members directly:
+Attempting
 
 ```python
 account.calculate_interest()
@@ -66,97 +103,204 @@ account.calculate_interest()
 
 raises
 
-```
-PrivateAccessError
-```
-
-Likewise,
-
-```python
-account.balance
-```
-
-raises
-
-```
+```text
 PrivateAccessError
 ```
 
 ---
 
-## Current API
+## Protected Members
 
 ```python
 from cobra import (
     CobraObject,
-    PrivateField,
+    ProtectedField,
+    protected,
+)
+
+
+class Animal(CobraObject):
+
+    health = ProtectedField(default=100)
+
+    @protected
+    def heartbeat(self):
+        return "❤️"
+
+    def check(self):
+        return self.heartbeat()
+
+
+class Dog(Animal):
+
+    def bark(self):
+        return self.heartbeat()
+
+
+dog = Dog()
+
+dog.bark()
+```
+
+Attempting
+
+```python
+dog.heartbeat()
+```
+
+raises
+
+```text
+ProtectedAccessError
+```
+
+---
+
+# Friend Access *(v0.3.0)*
+
+Friend access allows trusted classes to bypass private or protected restrictions.
+
+```python
+class AccountService(CobraObject):
+    ...
+
+
+class BankAccount(CobraObject):
+
+    @private(
+        friends=[AccountService]
+    )
+    def update_balance(self):
+        ...
+```
+
+The API is available in **v0.3.0**.
+
+Runtime friend validation will continue to evolve in future releases.
+
+---
+
+# Current API
+
+```python
+from cobra import (
+
+    CobraObject,
+
     private,
+    protected,
+
+    PrivateField,
+    ProtectedField,
+
 )
 ```
 
 ---
 
-## Roadmap
+# Architecture
 
-### ✅ v0.1.0
+```text
+                Decorators
+                     │
+                     ▼
+            Runtime Access Engine
+                     │
+                     ▼
+              Access Policies
+                     │
+                     ▼
+              Runtime Registry
+                     │
+     ┌───────────────┴───────────────┐
+     ▼                               ▼
+ Class Registry              Friend Registry
+```
+
+---
+
+# Roadmap
+
+## ✅ v0.1.0
 
 - Runtime private methods
-- `@private` decorator
+- `@private`
 - `CobraObject`
 
-### ✅ v0.2.0
+---
 
-- Descriptor-based private fields
+## ✅ v0.2.0
+
 - Runtime access engine
+- Descriptor-based `PrivateField`
 - Runtime class registry
-- Runtime access policies
-- `PrivateField`
+- Policy-based runtime validation
 
-### ✅ v0.2.1
+---
 
-- `@protected` decorator
+## ✅ v0.2.1
+
+- Runtime-enforced `@protected`
 - `ProtectedField`
-- Protected runtime validation
-- Expanded automated test suite (16 tests)
+- Expanded automated test suite
 
-### 🚧 v0.3.0
+---
 
-- `@friend` decorator
-- `FriendField`
-- Friend registry
-- Friend access policy
-- Runtime policy enhancements
+## 🚧 v0.3.0
 
-### 🚧 v0.4.0
+- Friend metadata (`friends=[...]`)
+- Runtime friend registry
+- Friend access validation
+- Runtime policy improvements
 
-- `@final` decorator
-- `@override` decorator
+---
+
+## 🚧 v0.4.0
+
+- `@final`
+- `@override`
 - Final classes
+- Runtime inheritance validation
 - Test suite reorganization
 - CI/CD integration
-- Improved documentation
+- Enhanced documentation
 
-### 🚧 v0.5.0
+---
 
-- DOJO static analysis engine
-- VS Code / Pylance diagnostics
-- Architecture rules
-- Runtime contracts
-- Developer tooling
+## 🚧 v0.5.0
 
-### 🎯 v1.0.0
+### DOJO
 
-- Complete runtime encapsulation framework
+Developer tooling for COBRA.
+
+Planned features include:
+
+- VS Code diagnostics
+- Pylance integration
+- Architecture validation
+- Static analysis
+- Runtime contract visualization
+
+---
+
+## 🎯 v1.0.0
+
+Production-ready runtime architecture framework featuring:
+
+- Complete runtime encapsulation
 - Stable public API
 - Comprehensive documentation
+- Friend access
+- Runtime contracts
 - Architecture enforcement
 - Static analysis integration
-- Framework integrations (Django, FastAPI)
+- Django integration
+- FastAPI integration
 - Production-ready release
 
 ---
 
-## Running Tests
+# Running Tests
 
 ```bash
 python -m pytest
@@ -164,26 +308,44 @@ python -m pytest
 
 ---
 
-## Contributing
+# Contributing
 
-Contributions, bug reports, feature requests, and design discussions are welcome.
+Contributions are welcome.
 
-Please open an issue before starting major changes.
+You can help by:
+
+- Reporting bugs
+- Suggesting features
+- Improving documentation
+- Writing tests
+- Submitting pull requests
+
+Please open an issue before beginning large changes.
 
 ---
 
-## License
+# License
 
 MIT License
 
 ---
 
-## Author
+# Author
 
-**Vishnu Swaroop**
+**Vishnu Swaroop G**
 
-GitHub:
-https://github.com/vishnuswaroop21/cobra-oop
+- GitHub  
+  https://github.com/vishnuswaroop21/cobra-oop
 
-PyPI:
-https://pypi.org/project/cobra-oop/
+- PyPI  
+  https://pypi.org/project/cobra-oop/
+
+---
+
+## Inspiration
+
+COBRA began as an exploration after hearing discussions around object-oriented design and the lack of strong encapsulation in Python.
+
+Rather than changing Python itself, COBRA investigates how far runtime-enforced object-oriented principles can be implemented using the language's existing capabilities—decorators, descriptors, and runtime introspection.
+
+The project is both an educational journey into Python's internals and an experimental framework for runtime architecture.

@@ -7,8 +7,8 @@ Responsible for:
 
 - Class registration
 - Runtime configuration
+- Friend registration
 - Future plugin management
-- Future friend resolution
 """
 
 from threading import RLock
@@ -25,11 +25,20 @@ class CobraRuntime:
 
     _classes = {}
 
+    #
+    # owner_class -> member_name -> frozenset(friend_classes)
+    #
+    _friend_registry = {}
+
     _config = {
         "enabled": True,
         "strict": True,
         "debug": False,
     }
+
+    # ------------------------------------------------------------------
+    # Class Registration
+    # ------------------------------------------------------------------
 
     @classmethod
     def register_class(cls, target):
@@ -56,6 +65,82 @@ class CobraRuntime:
         """
 
         return dict(cls._classes)
+
+    # ------------------------------------------------------------------
+    # Friend Registration
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def register_friend(
+        cls,
+        *,
+        owner: type,
+        member: str,
+        friends,
+    ):
+        """
+        Registers friend classes for a member.
+        """
+
+        with cls._lock:
+
+            members = cls._friend_registry.setdefault(
+                owner,
+                {}
+            )
+
+            members[member] = frozenset(friends)
+
+    @classmethod
+    def get_friends(
+        cls,
+        *,
+        owner: type,
+        member: str,
+    ):
+        """
+        Returns all friend classes for a member.
+        """
+
+        return (
+            cls._friend_registry
+            .get(owner, {})
+            .get(member, frozenset())
+        )
+
+    @classmethod
+    def is_friend(
+        cls,
+        *,
+        owner: type,
+        member: str,
+        caller,
+    ):
+        """
+        Returns True if the caller is a registered friend.
+        """
+
+        friends = cls.get_friends(
+            owner=owner,
+            member=member,
+        )
+
+        return isinstance(caller, tuple(friends))
+
+    @classmethod
+    def registered_friends(cls):
+        """
+        Returns a copy of the friend registry.
+        """
+
+        return {
+            owner: dict(members)
+            for owner, members in cls._friend_registry.items()
+        }
+
+    # ------------------------------------------------------------------
+    # Configuration
+    # ------------------------------------------------------------------
 
     @classmethod
     def configure(cls, **kwargs):
@@ -86,6 +171,10 @@ class CobraRuntime:
     def enabled(cls):
         return cls._config["enabled"]
 
+    # ------------------------------------------------------------------
+    # Testing
+    # ------------------------------------------------------------------
+
     @classmethod
     def reset(cls):
         """
@@ -95,7 +184,9 @@ class CobraRuntime:
         """
 
         with cls._lock:
+
             cls._classes.clear()
+            cls._friend_registry.clear()
 
             cls._config = {
                 "enabled": True,

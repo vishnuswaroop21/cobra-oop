@@ -9,14 +9,15 @@ checks to this module.
 
 from inspect import currentframe
 
-from .enums import AccessType, Operation
-from .policy import POLICIES
+from .enums import AccessType
+from .runtime import CobraRuntime
+
 
 def check_access(
     *,
-    access: AccessType,
+    access,
     member_type,
-    operation: Operation,
+    operation,
     owner: type,
     instance,
     member: str,
@@ -24,20 +25,17 @@ def check_access(
     """
     Determines whether the current caller is permitted
     to access a COBRA member.
-
-    v0.2.1 
-    Updated it to policy for better use.
     """
 
     frame = currentframe()
 
     try:
         #
-        # Expected stack (v0.2)
+        # Expected stack
         #
         # User Code
         #     ↓
-        # Decorator Wrapper / Descriptor (__get__/__set__)
+        # Decorator / Descriptor
         #     ↓
         # check_access()
         #
@@ -49,22 +47,86 @@ def check_access(
 
         caller_frame = access_frame.f_back
 
+        #
+        # Skip CobraObject.__getattribute__()
+        #
+        while (
+            caller_frame
+            and caller_frame.f_code.co_name == "__getattribute__"
+        ):
+            caller_frame = caller_frame.f_back
+
         if caller_frame is None:
             return False
 
         caller_self = caller_frame.f_locals.get("self")
 
-    
+        #
+        # External function / module
+        #
         if caller_self is None:
             return False
-        # Updated to policy 
-        policy = POLICIES[access]
-        return policy.check(
+
+        #
+        # ----------------------------------------------------------
+        # PUBLIC
+        # ----------------------------------------------------------
+        #
+        if access is AccessType.PUBLIC:
+            return True
+
+        #
+        # ----------------------------------------------------------
+        # PRIVATE
+        # ----------------------------------------------------------
+        #
+        if access is AccessType.PRIVATE:
+
+            #
+            # Same class
+            #
+            if isinstance(caller_self, owner):
+                return True
+
+            #
+            # Friend class
+            #
+            if CobraRuntime.is_friend(
                 owner=owner,
-                caller=caller_self,
                 member=member,
-                operation=operation,
-            )
+                caller=caller_self,
+            ):
+                return True
+
+            return False
+
+        #
+        # ----------------------------------------------------------
+        # PROTECTED
+        # ----------------------------------------------------------
+        #
+        if access is AccessType.PROTECTED:
+
+            #
+            # Class hierarchy
+            #
+            if issubclass(
+                caller_self.__class__,
+                owner,
+            ):
+                return True
+
+            #
+            # Friend class
+            #
+            if CobraRuntime.is_friend(
+                owner=owner,
+                member=member,
+                caller=caller_self,
+            ):
+                return True
+
+            return False
 
         raise NotImplementedError(
             f"{access.name} access has not been implemented."
