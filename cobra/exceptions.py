@@ -33,12 +33,28 @@ class ProtectedAccessError(CobraError):
     pass
 
 
-class FinalMethodError(CobraError):
+class FinalClassError(CobraError):
+    """
+    Raised when attempting to inherit
+    from a final class.
+    """
+
+    pass
+
+
+class FinalOverrideError(CobraError):
     """
     Raised when attempting to override
     a final method.
+    """
 
-    (Reserved for COBRA v0.2)
+    pass
+
+
+class FinalMethodError(FinalOverrideError):
+    """
+    Backward-compatible alias for final
+    method override errors.
     """
 
     pass
@@ -48,8 +64,6 @@ class OverrideError(CobraError):
     """
     Raised when an @override method does not
     override any method in the parent class.
-
-    (Reserved for COBRA v0.2)
     """
 
     pass

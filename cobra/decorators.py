@@ -76,10 +76,17 @@ def private(func=None, *, friends=None):
         # Metadata consumed by CobraRuntime during
         # class registration.
         #
-        wrapper.__cobra_metadata__ = {
-            "access": AccessType.PRIVATE,
-            "friends": friends,
-        }
+        metadata = dict(
+            getattr(func, "__cobra_metadata__", {})
+        )
+        metadata.update(
+            {
+                "access": AccessType.PRIVATE,
+                "friends": friends,
+            }
+        )
+
+        wrapper.__cobra_metadata__ = metadata
 
         return wrapper
 
@@ -150,10 +157,17 @@ def protected(func=None, *, friends=None):
 
             return func(*args, **kwargs)
 
-        wrapper.__cobra_metadata__ = {
-            "access": AccessType.PROTECTED,
-            "friends": friends,
-        }
+        metadata = dict(
+            getattr(func, "__cobra_metadata__", {})
+        )
+        metadata.update(
+            {
+                "access": AccessType.PROTECTED,
+                "friends": friends,
+            }
+        )
+
+        wrapper.__cobra_metadata__ = metadata
 
         return wrapper
 
@@ -175,24 +189,31 @@ def public(func):
     return func
 
 
-# ------------------------------------------------------------------
-# Placeholders
-# ------------------------------------------------------------------
-
-
-def final(func):
+def final(target):
     """
-    Placeholder for COBRA v0.4.
+    Marks a class or method as final.
     """
-    raise NotImplementedError(
-        "@final will be implemented in COBRA v0.4"
+
+    metadata = dict(
+        getattr(target, "__cobra_metadata__", {})
     )
+    metadata["final"] = True
+
+    target.__cobra_metadata__ = metadata
+
+    return target
 
 
 def override(func):
     """
-    Placeholder for COBRA v0.4.
+    Marks a method as an explicit override.
     """
-    raise NotImplementedError(
-        "@override will be implemented in COBRA v0.4"
+
+    metadata = dict(
+        getattr(func, "__cobra_metadata__", {})
     )
+    metadata["override"] = True
+
+    func.__cobra_metadata__ = metadata
+
+    return func

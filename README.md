@@ -30,6 +30,7 @@ The framework currently supports:
 - Automatic runtime class registration
 - Friend access metadata *(v0.3.0)*
 - Runtime friend access *(v0.3.1)*
+- Runtime inheritance validation *(v0.4.0)*
 
 COBRA is designed as a learning project and an extensible runtime architecture for future experimentation.
 
@@ -37,7 +38,7 @@ COBRA is designed as a learning project and an extensible runtime architecture f
 
 # Features
 
-## ✅ v0.3.1
+## ✅ v0.4.0
 
 - Runtime-enforced `@private`
 - Runtime-enforced `@protected`
@@ -46,6 +47,10 @@ COBRA is designed as a learning project and an extensible runtime architecture f
 - Friend metadata (`friends=[...]`)
 - Runtime friend registry
 - Runtime friend access validation
+- `@final`
+- `@override`
+- Final classes
+- Runtime inheritance validation
 - Centralized runtime access engine
 - Policy-based access validation
 - Automatic class registration
@@ -194,6 +199,72 @@ Non-friend callers are still denied by the runtime access engine.
 
 ---
 
+# Runtime Inheritance Validation *(v0.4.0)*
+
+COBRA validates final and override rules when classes are created.
+
+## Final Methods
+
+```python
+from cobra import CobraObject, final
+
+
+class Animal(CobraObject):
+
+    @final
+    def heartbeat(self):
+        return "❤️"
+
+
+class Dog(Animal):
+
+    def heartbeat(self):
+        return "💔"
+```
+
+Overriding a final method raises `FinalOverrideError` during class creation.
+
+## Final Classes
+
+```python
+from cobra import CobraObject, final
+
+
+@final
+class Animal(CobraObject):
+    pass
+
+
+class Dog(Animal):
+    pass
+```
+
+Inheriting from a final class raises `FinalClassError` during class creation.
+
+## Explicit Overrides
+
+```python
+from cobra import CobraObject, override
+
+
+class Animal(CobraObject):
+
+    def speak(self):
+        return "..."
+
+
+class Dog(Animal):
+
+    @override
+    def speak(self):
+        return "Woof"
+```
+
+Using `@override` on a method that does not exist in a superclass raises
+`OverrideError` during class creation.
+
+---
+
 # Current API
 
 ```python
@@ -203,6 +274,8 @@ from cobra import (
 
     private,
     protected,
+    final,
+    override,
 
     PrivateField,
     ProtectedField,
@@ -278,14 +351,15 @@ from cobra import (
 
 ---
 
-## 🚧 v0.4.0
+## ✅ v0.4.0
 
 - `@final`
 - `@override`
 - Final classes
 - Runtime inheritance validation
+- Final method validation
+- Invalid override validation
 - Test suite reorganization
-- CI/CD integration
 - Enhanced documentation
 
 ---

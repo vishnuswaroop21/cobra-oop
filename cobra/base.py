@@ -27,7 +27,9 @@ class CobraObject:
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
+        CobraRuntime.validate_inheritance(cls)
         CobraRuntime.register_class(cls)
+        CobraRuntime.register_class_metadata(cls)
         CobraRuntime.register_class_friends(cls)
 
     def __repr__(self):

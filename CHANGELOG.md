@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.4.0
+
+### Added
+
+- Added `@final` support for methods
+- Added `@final` support for classes
+- Added `@override` decorator support
+- Added runtime validation for final method overrides
+- Added runtime validation for final class inheritance
+- Added runtime validation for invalid `@override` usage
+- Added inheritance validation during `CobraObject` subclass creation
+- Added final and override unit test suites
+
+---
+
 ## v0.3.1
 
 ### Added

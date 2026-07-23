@@ -23,9 +23,13 @@ from .exceptions import (
     CobraError,
     PrivateAccessError,
     ProtectedAccessError,
+    FinalClassError,
+    FinalOverrideError,
+    FinalMethodError,
+    OverrideError,
 )
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     # Base
@@ -49,4 +53,8 @@ __all__ = [
     "CobraError",
     "PrivateAccessError",
     "ProtectedAccessError",
+    "FinalClassError",
+    "FinalOverrideError",
+    "FinalMethodError",
+    "OverrideError",
 ]
