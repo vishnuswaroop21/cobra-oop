@@ -51,6 +51,40 @@ class CobraRuntime:
             cls._classes[key] = target
 
     @classmethod
+    def register_class_friends(cls, target):
+        """
+        Registers friend metadata declared on COBRA members.
+        """
+
+        for member_name, member in vars(target).items():
+
+            if not callable(member):
+                continue
+
+            metadata = getattr(
+                member,
+                "__cobra_metadata__",
+                None,
+            )
+
+            if metadata is None:
+                continue
+
+            friends = metadata.get(
+                "friends",
+                frozenset(),
+            )
+
+            if not friends:
+                continue
+
+            cls.register_friend(
+                owner=target,
+                member=member_name,
+                friends=friends,
+            )
+
+    @classmethod
     def get_class(cls, qualified_name):
         """
         Returns a registered class.

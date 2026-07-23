@@ -6,9 +6,11 @@ from cobra import (
     CobraObject,
     CobraRuntime,
     private,
+    protected,
 )
 from cobra.exceptions import (
     PrivateAccessError,
+    ProtectedAccessError,
 )
 
 
@@ -18,15 +20,34 @@ from cobra.exceptions import (
 
 
 class AccountService(CobraObject):
+
+    def read_account_number(self, account):
+        return account.account_number()
+
+    def read_balance(self, account):
+        return account.balance()
+
+    def read_routing_code(self, account):
+        return account.routing_code()
+
+
+class PremiumAccountService(AccountService):
     pass
 
 
 class AuditService(CobraObject):
-    pass
+
+    def read_balance(self, account):
+        return account.balance()
 
 
 class Hacker(CobraObject):
-    pass
+
+    def read_account_number(self, account):
+        return account.account_number()
+
+    def read_routing_code(self, account):
+        return account.routing_code()
 
 
 class BankAccount(CobraObject):
@@ -49,6 +70,10 @@ class BankAccount(CobraObject):
 
     def reveal_balance(self):
         return self.balance()
+
+    @protected(friends=[AccountService])
+    def routing_code(self):
+        return "ROUTE-001"
 
 
 # ---------------------------------------------------------------------
@@ -88,6 +113,22 @@ def test_private_without_friends():
     metadata = User.secret.__cobra_metadata__
 
     assert metadata["friends"] == frozenset()
+
+
+def test_protected_accepts_friend():
+
+    metadata = BankAccount.routing_code.__cobra_metadata__
+
+    assert metadata["friends"] == frozenset(
+        {AccountService}
+    )
+
+
+def test_friend_metadata_preserves_access_type():
+
+    metadata = BankAccount.account_number.__cobra_metadata__
+
+    assert metadata["access"].name == "PRIVATE"
 
 
 # ---------------------------------------------------------------------
@@ -167,23 +208,145 @@ def test_runtime_unknown_member_returns_empty_set():
     assert friends == frozenset()
 
 
+def test_runtime_empty_registry_returns_empty_dict(monkeypatch):
+
+    monkeypatch.setattr(
+        CobraRuntime,
+        "_friend_registry",
+        {},
+    )
+
+    assert CobraRuntime.registered_friends() == {}
+
+
+def test_runtime_unknown_owner_returns_empty_set():
+
+    class UnknownOwner(CobraObject):
+        pass
+
+    friends = CobraRuntime.get_friends(
+        owner=UnknownOwner,
+        member="account_number",
+    )
+
+    assert friends == frozenset()
+
+
+def test_runtime_is_friend_returns_true_for_registered_friend():
+
+    service = AccountService()
+
+    assert CobraRuntime.is_friend(
+        owner=BankAccount,
+        member="account_number",
+        caller=service,
+    )
+
+
+def test_runtime_is_friend_returns_false_for_non_friend():
+
+    hacker = Hacker()
+
+    assert not CobraRuntime.is_friend(
+        owner=BankAccount,
+        member="account_number",
+        caller=hacker,
+    )
+
+
+def test_runtime_registry_inspection_contains_owner():
+
+    registry = CobraRuntime.registered_friends()
+
+    assert BankAccount in registry
+
+
+def test_runtime_registry_inspection_contains_member():
+
+    registry = CobraRuntime.registered_friends()
+
+    assert "account_number" in registry[BankAccount]
+
+
+def test_automatic_runtime_registration_single_friend():
+
+    friends = CobraRuntime.get_friends(
+        owner=BankAccount,
+        member="account_number",
+    )
+
+    assert friends == frozenset(
+        {AccountService}
+    )
+
+
+def test_automatic_runtime_registration_multiple_friends():
+
+    friends = CobraRuntime.get_friends(
+        owner=BankAccount,
+        member="balance",
+    )
+
+    assert friends == frozenset(
+        {
+            AccountService,
+            AuditService,
+        }
+    )
+
+
 # ---------------------------------------------------------------------
-# Future Friend Access
+# Friend Access Validation
 # ---------------------------------------------------------------------
 
-#
-# These tests are intentionally postponed until
-# friend access validation is implemented.
-#
-# def test_friend_can_call_private():
-#     ...
-#
-# def test_non_friend_cannot_call_private():
-#     ...
-#
-# def test_friend_can_call_protected():
-#     ...
-#
-# def test_friend_inheritance():
-#     ...
-#
+
+def test_friend_can_call_private_method():
+
+    service = AccountService()
+    account = BankAccount()
+
+    assert service.read_account_number(account) == "123456789"
+
+
+def test_multiple_friends_can_call_private_method():
+
+    account_service = AccountService()
+    audit_service = AuditService()
+    account = BankAccount()
+
+    assert account_service.read_balance(account) == 1000
+    assert audit_service.read_balance(account) == 1000
+
+
+def test_non_friend_cannot_call_private_method():
+
+    hacker = Hacker()
+    account = BankAccount()
+
+    with pytest.raises(PrivateAccessError):
+        hacker.read_account_number(account)
+
+
+def test_inherited_friend_can_call_private_method():
+
+    service = PremiumAccountService()
+    account = BankAccount()
+
+    assert service.read_account_number(account) == "123456789"
+
+
+def test_friend_can_call_protected_method():
+
+    service = AccountService()
+    account = BankAccount()
+
+    assert service.read_routing_code(account) == "ROUTE-001"
+
+
+def test_non_friend_cannot_call_protected_method():
+
+    hacker = Hacker()
+    account = BankAccount()
+
+    with pytest.raises(ProtectedAccessError):
+        hacker.read_routing_code(account)

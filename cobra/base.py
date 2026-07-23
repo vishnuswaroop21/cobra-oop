@@ -28,6 +28,7 @@ class CobraObject:
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         CobraRuntime.register_class(cls)
+        CobraRuntime.register_class_friends(cls)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} at {hex(id(self))}>"

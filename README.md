@@ -29,6 +29,7 @@ The framework currently supports:
 - Runtime policy engine
 - Automatic runtime class registration
 - Friend access metadata *(v0.3.0)*
+- Runtime friend access *(v0.3.1)*
 
 COBRA is designed as a learning project and an extensible runtime architecture for future experimentation.
 
@@ -36,7 +37,7 @@ COBRA is designed as a learning project and an extensible runtime architecture f
 
 # Features
 
-## ✅ v0.3.0
+## ✅ v0.3.1
 
 - Runtime-enforced `@private`
 - Runtime-enforced `@protected`
@@ -44,6 +45,7 @@ COBRA is designed as a learning project and an extensible runtime architecture f
 - Descriptor-based `ProtectedField`
 - Friend metadata (`friends=[...]`)
 - Runtime friend registry
+- Runtime friend access validation
 - Centralized runtime access engine
 - Policy-based access validation
 - Automatic class registration
@@ -156,13 +158,18 @@ ProtectedAccessError
 
 ---
 
-# Friend Access *(v0.3.0)*
+# Friend Access *(v0.3.1)*
 
 Friend access allows trusted classes to bypass private or protected restrictions.
 
 ```python
+from cobra import CobraObject, private
+
+
 class AccountService(CobraObject):
-    ...
+
+    def update(self, account):
+        return account.update_balance()
 
 
 class BankAccount(CobraObject):
@@ -171,12 +178,19 @@ class BankAccount(CobraObject):
         friends=[AccountService]
     )
     def update_balance(self):
-        ...
+        return "updated"
+
+
+account = BankAccount()
+service = AccountService()
+
+service.update(account)
 ```
 
-The API is available in **v0.3.0**.
+Friend metadata is stored by the decorator and registered automatically
+when the `CobraObject` subclass is created.
 
-Runtime friend validation will continue to evolve in future releases.
+Non-friend callers are still denied by the runtime access engine.
 
 ---
 
@@ -255,6 +269,15 @@ from cobra import (
 
 ---
 
+## ✅ v0.3.1
+
+- Automatic friend registration
+- Runtime private friend access
+- Runtime protected friend access
+- Expanded friend test coverage
+
+---
+
 ## 🚧 v0.4.0
 
 - `@final`
@@ -326,7 +349,7 @@ Please open an issue before beginning large changes.
 
 # License
 
-MIT License
+MIT License. See [LICENSE](LICENSE).
 
 ---
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.3.1
+
+### Added
+
+- Added automatic friend registration during `CobraObject` subclass creation
+- Added runtime validation for friend access to private methods
+- Added runtime validation for friend access to protected methods
+- Added tests for allowed friend access and denied non-friend access
+
+---
+
 ## v0.3.0
 
 ### Added
